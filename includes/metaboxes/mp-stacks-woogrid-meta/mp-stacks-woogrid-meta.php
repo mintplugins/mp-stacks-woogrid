@@ -32,16 +32,29 @@ function mp_stacks_woogrid_create_meta_box(){
 		'metabox_title' => __( '"WooGrid" Content-Type', 'mp_stacks_woogrid'), 
 		'metabox_posttype' => 'mp_brick', 
 		'metabox_context' => 'advanced', 
-		'metabox_priority' => 'low' 
+		'metabox_priority' => 'low',
+		'metabox_content_via_ajax' => true,
 	);
 	
+	//Add "All" as the first option for sources for this grid
+	$product_categories['all'] = __( 'All Products', 'mp_stacks_woogrid' );
+		
+	$get_product_categories = mp_core_get_all_terms_by_tax('product_cat'); 
+	
+	//Loop through each category
+	foreach( $get_product_categories as $term_id => $term_name ){
+		//Add the event category to the list of source options for this grid
+		$product_categories[$term_id] = $term_name;
+	}
+	$product_categories['related_products'] = __('Show Related Products based on Tag (only use this if the stack is sitting on a "Product" page).');	
+	
+	//Create the correct "Manage Sermons" link to match the WooCommerce plugin.
+	$manage_products_link = admin_url( 'edit.php?post_type=product' );
+			
 	/**
 	 * Array which stores all info about the options within the metabox
 	 *
 	 */
-	$product_categories = mp_core_get_all_terms_by_tax('product_cat'); 
-	$product_categories['related_products'] = __('Show Related Products based on Tag (only use this if the stack is sitting on a "Product" page).');
-	 
 	$mp_stacks_woogrid_items_array = array(
 	
 		//Use this to add new options at this point with the filter hook
@@ -57,7 +70,7 @@ function mp_stacks_woogrid_create_meta_box(){
 			'woogrid_taxonomy_terms' => array(
 				'field_id'			=> 'taxonomy_term',
 				'field_title' 	=> __( 'Select a Category or Tag you want to show', 'mp_stacks_woogrid'),
-				'field_description' 	=> __( 'What posts should be shown in the Product Grid?', 'mp_stacks_woogrid' ),
+				'field_description' 	=> __( 'What products should be shown in the Product Grid?', 'mp_stacks_woogrid' ) . ' (<a href="' . $manage_products_link . '" target="_blank">' . __( 'Manage Products', 'mp_stacks_woogrid' ) . '</a>)',
 				'field_type' 	=> 'select',
 				'field_value' => '',
 				'field_select_values' => $product_categories,
@@ -424,4 +437,5 @@ function mp_stacks_woogrid_create_meta_box(){
 	global $mp_stacks_woogrid_meta_box;
 	$mp_stacks_woogrid_meta_box = new MP_CORE_Metabox($mp_stacks_woogrid_add_meta_box, $mp_stacks_woogrid_items_array);
 }
-add_action('mp_brick_metabox', 'mp_stacks_woogrid_create_meta_box');
+add_action('mp_brick_ajax_metabox', 'mp_stacks_woogrid_create_meta_box');
+add_action('wp_ajax_mp_stacks_woogrid_metabox_content', 'mp_stacks_woogrid_create_meta_box');
