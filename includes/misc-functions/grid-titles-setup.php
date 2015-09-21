@@ -344,7 +344,7 @@ function mp_stacks_woogrid_title_animation_js( $existing_filter_output, $post_id
 	}
 			
 	//Get JS output to animate the titles on mouse over and out
-	$title_animation_js = mp_core_js_mouse_over_animate_child( '#mp-brick-' . $post_id . ' .mp-stacks-grid-item', '.mp-stacks-woogrid-item-title-holder', mp_core_get_post_meta( $post_id, 'woogrid_title_animation_keyframes', array() ) ); 
+	$title_animation_js = mp_core_js_mouse_over_animate_child( '#mp-brick-' . $post_id . ' .mp-stacks-grid-item', '.mp-stacks-woogrid-item-title-holder', mp_core_get_post_meta( $post_id, 'woogrid_title_animation_keyframes', array() ), true, true, 'mp-brick-' . $post_id ); 
 
 	return $existing_filter_output . $title_animation_js;
 }

@@ -267,7 +267,7 @@ function mp_stacks_woogrid_excerpt( $post_id, $word_limit, $read_more_text = NUL
 	}
 	else{
 		
-		$output_string = strip_tags($the_excerpt);
+		$output_string = strip_tags( apply_filters( 'mp_stacks_woogrid_the_excerpt', $the_excerpt ) );
 		
 		$output_string .= !empty( $read_more_text ) ? '<span class="mp-stacks-postgrid-read-more">' . $read_more_text . '</span>' : NULL;
 		
@@ -390,7 +390,7 @@ function mp_stacks_woogrid_excerpt_animation_js( $existing_filter_output, $post_
 	}
 	
 	//Get JS output to animate the excerpts on mouse over and out
-	$excerpt_animation_js = mp_core_js_mouse_over_animate_child( '#mp-brick-' . $post_id . ' .mp-stacks-grid-item', '.mp-stacks-woogrid-item-excerpt-holder', mp_core_get_post_meta( $post_id, 'woogrid_excerpt_animation_keyframes', array() ) ); 
+	$excerpt_animation_js = mp_core_js_mouse_over_animate_child( '#mp-brick-' . $post_id . ' .mp-stacks-grid-item', '.mp-stacks-woogrid-item-excerpt-holder', mp_core_get_post_meta( $post_id, 'woogrid_excerpt_animation_keyframes', array() ), true, true, 'mp-brick-' . $post_id ); 
 
 	return $existing_filter_output . $excerpt_animation_js;
 }
