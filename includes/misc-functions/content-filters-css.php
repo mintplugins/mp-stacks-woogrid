@@ -63,7 +63,7 @@ function mp_stacks_brick_content_output_css_woogrid( $css_output, $post_id, $fir
 	$css_output = '
 	#mp-brick-' . $post_id . ' .mp-stacks-grid-item{' . 
 			mp_core_css_line( 'color', $default_text_color ) . 
-			mp_core_css_line( 'width', round((100/$woogrid_per_row), 1), '%' ) . 
+			mp_core_css_line( 'width', mp_stacks_grid_posts_per_row_percentage( $woogrid_per_row ), '%' ) . 
 			mp_core_css_line( 'padding', $woogrid_post_spacing, 'px' ) . 
 	'}
 	#mp-brick-' . $post_id . ' .mp-stacks-grid-item-inner{' . 
