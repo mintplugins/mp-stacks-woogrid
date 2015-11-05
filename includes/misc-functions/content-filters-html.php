@@ -190,53 +190,76 @@ function mp_stacks_woogrid_output( $post_id, $loading_more = false, $post_offset
 		
 	}
 		
-	//If there are tax terms selected to show
-	if ( is_array( $woogrid_taxonomy_terms ) && !empty( $woogrid_taxonomy_terms[0]['taxonomy_term'] ) ){
+	//Check the load more behavior to make sure it ins't pagination
+	$load_more_behaviour = mp_core_get_post_meta($post_id, 'woogrid' . '_load_more_behaviour', 'ajax_load_more' );
+	
+	//If we are loading from scratch based on a user's selection AND we are not using pagination as the "Load More" style (which won't work with this type of filtering)
+	if ( isset( $_POST['mp_stacks_grid_filter_tax'] ) && !empty( $_POST['mp_stacks_grid_filter_tax'] ) && isset( $_POST['mp_stacks_grid_filter_term'] ) && !empty( $_POST['mp_stacks_grid_filter_term'] ) && $load_more_behaviour != 'pagination' ){
 		
-		//If the selection for category is "all", we don't need to add anything extra to the qeury
-		if ( $woogrid_taxonomy_terms[0]['taxonomy_term'] != 'all' ){
+		$user_chosen_tax = $_POST['mp_stacks_grid_filter_tax'];
+		$user_chosen_term = $_POST['mp_stacks_grid_filter_term'];
+		
+		if ( !empty( $user_chosen_tax ) && !empty( $user_chosen_term ) ){
+		
+			//Add the user chosen tax and term as a tax_query to the WP_Query
+			$woogrid_args['tax_query'][] = array(
+				'taxonomy' => $user_chosen_tax,
+				'field'    => 'slug',
+				'terms'    => $user_chosen_term,
+			);
+		
+		}
+					
+	}	
+	else{
+		//If there are tax terms selected to show
+		if ( is_array( $woogrid_taxonomy_terms ) && !empty( $woogrid_taxonomy_terms[0]['taxonomy_term'] ) ){
 			
-			//Loop through each term the user added to this woogrid
-			foreach( $woogrid_taxonomy_terms as $woogrid_taxonomy_term ){
-			
-				//If we should show related products
-				if ( $woogrid_taxonomy_term['taxonomy_term'] == 'related_products' ){
-					
-					$tags = wp_get_post_terms( $queried_object_id, 'product_tag' );
-					
-					if ( is_object( $tags ) ){
-						$tags_array = $tags;
+			//If the selection for category is "all", we don't need to add anything extra to the qeury
+			if ( $woogrid_taxonomy_terms[0]['taxonomy_term'] != 'all' ){
+				
+				//Loop through each term the user added to this woogrid
+				foreach( $woogrid_taxonomy_terms as $woogrid_taxonomy_term ){
+				
+					//If we should show related products
+					if ( $woogrid_taxonomy_term['taxonomy_term'] == 'related_products' ){
+						
+						$tags = wp_get_post_terms( $queried_object_id, 'product_tag' );
+						
+						if ( is_object( $tags ) ){
+							$tags_array = $tags;
+						}
+						elseif (is_array( $tags ) ){
+							$tags_array = isset( $tags[0] ) ? $tags[0] : NULL;
+						}
+						
+						$tag_slugs = wp_get_post_terms( $queried_object_id, 'product_tag', array("fields" => "slugs") );
+						
+						//Add the related tags as a tax_query to the WP_Query
+						$woogrid_args['tax_query'][] = array(
+							'taxonomy' => 'product_tag',
+							'field'    => 'slug',
+							'terms'    => $tag_slugs,
+						);
+									
 					}
-					elseif (is_array( $tags ) ){
-						$tags_array = isset( $tags[0] ) ? $tags[0] : NULL;
+					//If we should show a product category of the users choosing
+					else{
+						
+						//Add the category we want to show to the WP_Query
+						$woogrid_args['tax_query'][] = array(
+							'taxonomy' => 'product_cat',
+							'field'    => 'id',
+							'terms'    => $woogrid_taxonomy_term['taxonomy_term'],
+							'operator' => 'IN'
+						);		
 					}
-					
-					$tag_slugs = wp_get_post_terms( $queried_object_id, 'product_tag', array("fields" => "slugs") );
-					
-					//Add the related tags as a tax_query to the WP_Query
-					$woogrid_args['tax_query'][] = array(
-						'taxonomy' => 'product_tag',
-						'field'    => 'slug',
-						'terms'    => $tag_slugs,
-					);
-								
-				}
-				//If we should show a product category of the users choosing
-				else{
-					
-					//Add the category we want to show to the WP_Query
-					$woogrid_args['tax_query'][] = array(
-						'taxonomy' => 'product_cat',
-						'field'    => 'id',
-						'terms'    => $woogrid_taxonomy_term['taxonomy_term'],
-						'operator' => 'IN'
-					);		
 				}
 			}
 		}
-	}
-	else{
-		return false;	
+		else{
+			return false;	
+		}
 	}
 	
 	//Show Product Images?
@@ -261,7 +284,7 @@ function mp_stacks_woogrid_output( $post_id, $loading_more = false, $post_offset
 	$woogrid_output .= !$loading_more ? apply_filters( 'mp_stacks_grid_before', NULL, $post_id, 'woogrid', $woogrid_taxonomy_terms ) : NULL; 
 	
 	//Get Product Output
-	$woogrid_output .= !$loading_more ? '<div class="mp-stacks-grid ' . apply_filters( 'mp_stacks_grid_classes', NULL, $post_id, 'woogrid' ) . '">' : NULL;
+	$woogrid_output .= !$loading_more ? '<div class="mp-stacks-grid ' . apply_filters( 'mp_stacks_grid_classes', NULL, $post_id, 'woogrid' ) . '" ' . apply_filters( 'mp_stacks_grid_attributes', NULL, $post_id, 'woogrid' ) . '>' : NULL;
 			
 	//Create new query for stacks
 	$woogrid_query = new WP_Query( apply_filters( 'woogrid_args', $woogrid_args ) );
