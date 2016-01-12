@@ -42,9 +42,11 @@ function mp_stacks_woogrid_create_meta_box(){
 	$get_product_categories = mp_core_get_all_terms_by_tax('product_cat'); 
 	
 	//Loop through each category
-	foreach( $get_product_categories as $term_id => $term_name ){
-		//Add the event category to the list of source options for this grid
-		$product_categories[$term_id] = $term_name;
+	if ( is_array( $get_product_categories ) ){
+		foreach( $get_product_categories as $term_id => $term_name ){
+			//Add the event category to the list of source options for this grid
+			$product_categories[$term_id] = $term_name;
+		}
 	}
 	$product_categories['related_products'] = __('Show Related Products based on Tag (only use this if the stack is sitting on a "Product" page).');	
 	
