@@ -60,7 +60,7 @@ function mp_stacks_brick_content_output_css_woogrid( $css_output, $post_id, $fir
 	
 	//Get CSS Output
 	
-	$css_output = '
+	$css_output .= '
 	#mp-brick-' . $post_id . ' .mp-stacks-grid-item{' . 
 			mp_core_css_line( 'color', $default_text_color ) . 
 			mp_core_css_line( 'width', mp_stacks_grid_posts_per_row_percentage( $woogrid_per_row ), '%' ) . 
