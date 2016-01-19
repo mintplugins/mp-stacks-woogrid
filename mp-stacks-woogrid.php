@@ -3,7 +3,7 @@
 Plugin Name: MP Stacks + WooGrid
 Plugin URI: http://mintplugins.com
 Description: Display posts from WooCommerce categories in a grid in a Brick
-Version: 1.0.0.4
+Version: 1.0.0.5
 Author: Mint Plugins
 Author URI: http://mintplugins.com
 Text Domain: mp_stacks_woogrid
@@ -34,7 +34,7 @@ License: GPL2
 */
 // Plugin version
 if( !defined( 'MP_STACKS_WOOGRID_VERSION' ) )
-	define( 'MP_STACKS_WOOGRID_VERSION', '1.0.0.4' );
+	define( 'MP_STACKS_WOOGRID_VERSION', '1.0.0.5' );
 
 // Plugin Folder URL
 if( !defined( 'MP_STACKS_WOOGRID_PLUGIN_URL' ) )
@@ -130,7 +130,7 @@ function mp_stacks_woogrid_include_files(){
 		/**
 		 * Check if WooCommerce is installed
 		 */
-		include_once( MP_STACKS_WOOGRID_PLUGIN_DIR . 'includes/plugin-checker/included-plugins/woo-commerce-check.php' );
+		include_once( MP_STACKS_WOOGRID_PLUGIN_DIR . 'includes/plugin-checker/included-plugins/woocommerce-check.php' );
 		
 	}
 	/**

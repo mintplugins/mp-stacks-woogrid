@@ -4,7 +4,7 @@ Donate link: http://mintplugins.com/
 Tags: message bar, header
 Requires at least: 3.5
 Tested up to: 4.3
-Stable tag: 1.0.0.4
+Stable tag: 1.0.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,9 @@ See full instructions at http://mintplugins.com/doc/mp-stacks
 
 
 == Changelog ==
+
+= 1.0.0.5 = January 19, 2016
+* Fixed typo in woocommerce check inclusion.
 
 = 1.0.0.4 = January 12, 2016
 * Make WooGrid output its CSS WITH initial css. This fixes a bug where the woogrid is the second content-type in a brick and it cancels any css prior (1st Content Type).
