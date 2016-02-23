@@ -79,6 +79,35 @@ function mp_stacks_woogrid_excerpt_meta_options( $items_array ){
 			'field_value' => '19',
 			'field_showhider' => 'woogrid_excerpt_settings',
 		),
+		
+		'woogrid_excerpt_google_font' => array(
+			'field_id'			=> 'woogrid_excerpt_google_font',
+			'field_title' 	=> __( 'Google Font Name', 'mp_stacks'),
+			'field_description' 	=> 'Enter the name of the Google Font to use for this Text <br /><a class="button" href="https://www.google.com/fonts" target="_blank">Browse Google Fonts<div  style="margin-top: 3.3px; margin-left: 5px;" class="dashicons dashicons-share-alt2"></div></a>',
+			'field_type' 	=> 'textbox',
+			'field_value' => '',
+			'field_placeholder' => __( 'Google Font Name', 'mp_stacks_googlefonts' ),
+			'field_showhider' => 'woogrid_excerpt_settings',
+		),
+		'woogrid_excerpt_google_font_weight_style' => array(
+			'field_id'			=> 'woogrid_excerpt_google_font_weight_style',
+			'field_title' 	=> __( 'Font Weight/Style', 'mp_stacks'),
+			'field_description' 	=> 'Set the weight of this font (If available for your chosen font)',
+			'field_type' 	=> 'select',
+			'field_select_values' => array( 
+				'100' => 'Thin', 
+				'200' => 'Extra-Light', 
+				'300' => 'Light', 
+				'400' => 'Normal', 
+				'500' => 'Medium', 
+				'600' => 'Semi-Bold', 
+				'700' => 'Bold',
+				'900' => 'Ultra-Bold', 
+			),
+			'field_value' => '',
+			'field_showhider' => 'woogrid_excerpt_settings',
+		),
+		
 		'woogrid_excerpt_spacing' => array(
 			'field_id'			=> 'woogrid_excerpt_spacing',
 			'field_title' 	=> __( 'Excerpts\' Spacing', 'mp_stacks_postgrid'),
@@ -420,3 +449,46 @@ function mp_stacks_woogrid_excerpt_css( $css_output, $post_id ){
 	return $css_output .= mp_stacks_grid_text_css( $post_id, 'woogrid_excerpt', 'mp-stacks-woogrid-item-excerpt', $excerpt_css_defaults );
 }
 add_filter('mp_stacks_woogrid_css', 'mp_stacks_woogrid_excerpt_css', 10, 2);
+
+/**
+ * Add the Google Fonts for the Grid Titles
+ *
+ * @param    $css_output          String - The incoming CSS output coming from other things using this filter
+ * @param    $post_id             Int - The post ID of the brick
+ * @param    $first_content_type  String - The first content type chosen for this brick
+ * @param    $second_content_type String - The second content type chosen for this brick
+ * @return   $css_output          String - A string holding the css the brick
+ */
+function mp_stacks_woogrid_excerpt_google_font( $css_output, $post_id, $first_content_type, $second_content_type ){
+	
+	if ( $first_content_type != 'woogrid' && $second_content_type != 'woogrid' ){
+		return $css_output;	
+	}
+	
+	global $mp_stacks_footer_inline_css, $mp_core_font_families;
+	
+	//Default settings for the MP Core Google Font Class
+	$mp_core_google_font_args = array( 'echo_google_font_css' => false, 'wrap_in_style_tags' => false );
+	
+	$woogrid_excerpt_googlefont = mp_core_get_post_meta( $post_id, 'woogrid_excerpt_google_font' );
+	$woogrid_excerpt_googlefontweight = mp_core_get_post_meta( $post_id, 'woogrid_excerpt_google_font_weight_style' );
+	
+	//If a font name has been entered
+	if ( !empty( $woogrid_excerpt_googlefont ) ){
+		
+		//Check if a font extra (weight) has been selected and add it if so.
+		$woogrid_excerpt_googlefontweight = isset($woogrid_excerpt_googlefontweight) && !empty( $woogrid_excerpt_googlefontweight ) ? ':' . $woogrid_excerpt_googlefontweight : NULL;
+		$woogrid_excerpt_googlefont = $woogrid_excerpt_googlefont . $woogrid_excerpt_googlefontweight;
+	
+		//Load the Google Font using the Google Font Class in MP Core
+		new MP_CORE_Font( $woogrid_excerpt_googlefont, $woogrid_excerpt_googlefont, $mp_core_google_font_args );
+		$mp_stacks_footer_inline_css[$woogrid_excerpt_googlefont] = $mp_core_font_families[$woogrid_excerpt_googlefont];
+		
+		//Return the incoming css string plus css to apply this font family to all paragraph tags
+		$css_output .=  '#mp-brick-' . $post_id . ' .mp-stacks-woogrid-item-excerpt, #mp-brick-' . $post_id . ' .mp-stacks-woogrid-item-excerpt * { font-family: \'' . $woogrid_excerpt_googlefont . '\';}';
+	
+	}
+	
+	return $css_output;	
+}
+add_filter('mp_brick_additional_css', 'mp_stacks_woogrid_excerpt_google_font', 10, 4);	
